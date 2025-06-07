@@ -14,31 +14,41 @@ document.addEventListener("DOMContentLoaded", () => {
       activitiesList.innerHTML = "";
 
       // Populate activities list
-      Object.entries(activities).forEach(([name, details]) => {
-        const activityCard = document.createElement("div");
-        activityCard.className = "activity-card";
-
-        const spotsLeft = details.max_participants - details.participants.length;
-
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-        `;
-
-        activitiesList.appendChild(activityCard);
-
-        // Add option to select dropdown
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        activitySelect.appendChild(option);
-      });
+      renderActivities(activities);
     } catch (error) {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
       console.error("Error fetching activities:", error);
     }
+  }
+
+  // Render activities to the page
+  function renderActivities(activities) {
+    activitiesList.innerHTML = "";
+    Object.entries(activities).forEach(([name, info]) => {
+      const card = document.createElement("div");
+      card.className = "activity-card";
+      card.innerHTML = `
+        <h4>${name}</h4>
+        <p><strong>Description:</strong> ${info.description}</p>
+        <p><strong>Schedule:</strong> ${info.schedule}</p>
+        <p><strong>Max Participants:</strong> ${info.max_participants}</p>
+        <div class="participants-section">
+          <h5>Participants:</h5>
+          ${
+            info.participants.length > 0
+              ? `<ul class="participants-list">${info.participants.map(email => `<li>${email}</li>`).join('')}</ul>`
+              : `<span class="no-participants">No participants yet.</span>`
+          }
+        </div>
+      `;
+      activitiesList.appendChild(card);
+
+      // Add option to select dropdown
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      activitySelect.appendChild(option);
+    });
   }
 
   // Handle form submission
